@@ -2,6 +2,8 @@
 
 Checks inputs for new entries and forwards them to outputs (based on name/tag). For now, the only inputs it supports are rss feeds.
 
+Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
+
 ## Supported outputs
 
 - [x] discord webhook
