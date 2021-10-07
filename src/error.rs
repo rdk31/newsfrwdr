@@ -12,4 +12,6 @@ pub enum Error {
     Request(#[from] reqwest::Error),
     #[error("toml error: {0}")]
     Toml(#[from] toml::de::Error),
+    #[error("serenity error: {0}")]
+    Serenity(#[from] serenity::Error),
 }
