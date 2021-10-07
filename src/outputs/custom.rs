@@ -49,7 +49,6 @@ impl OutputTrait for Custom {
             let child_stdin = child.stdin.as_mut().unwrap();
             child_stdin.write_all(serialized_message.as_bytes()).await?;
             child_stdin.flush().await?;
-            drop(child_stdin);
 
             child.wait_with_output().await?;
         } else {
