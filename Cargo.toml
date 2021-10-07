@@ -1,10 +1,10 @@
 [package]
-name = "news-forwarder"
+name = "newsfrwdr"
 version = "0.1.0-alpha.1"
 authors = ["rdk31 <rdk31@protonmail.com>"]
 edition = "2018"
 license = "MIT"
-repository = "https://github.com/rdk31/news-forwarder"
+repository = "https://github.com/rdk31/newsfrwdr"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
