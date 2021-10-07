@@ -8,7 +8,7 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 
 - [x] custom command
 - [x] discord webhook
-- [ ] discord bot
+- [x] discord bot
 - [ ] slack webhook
 - [ ] telegram bot
 
@@ -49,8 +49,9 @@ type = "discord_webhook"
 url = "https://discord.com/api/webhooks/abcd..."
 
 [[outputs.rust-blog]] # name output
-type = "discord_webhook"
-url = "https://discord.com/api/webhooks/efgh..."
+type = "discord_bot"
+token = "token"
+user_id = 123456789
 
 [[outputs.it]]        # tag output
 type = "discord_webhook"
@@ -82,6 +83,16 @@ Uses embeds to push entries. Title of the embed is in format: `<input_name> - <e
 | key    | string |   yes    |    -    | input name or tag to forward |
 | `type` | string |   yes    |    -    | output type                  |
 | `url`  | string |   yes    |    -    | discord webhook url          |
+
+#### `discord_bot` type
+
+Uses embeds to push entries. Title of the embed is in format: `<input_name> - <entry_title>`.
+
+| Field     |  Type  | Required | Default | Description                  |
+| --------- | :----: | :------: | :-----: | ---------------------------- |
+| key       | string |   yes    |    -    | input name or tag to forward |
+| `token`   | string |   yes    |    -    | discord bot token            |
+| `user_id` |  u64   |   yes    |    -    | user id to push entries to   |
 
 #### `custom` type
 
