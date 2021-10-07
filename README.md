@@ -8,7 +8,7 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 
 - [x] custom command
 - [x] discord webhook
-- [ ] discord bot
+- [x] discord bot
 - [ ] slack webhook
 - [ ] telegram bot
 
