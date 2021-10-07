@@ -54,8 +54,6 @@ impl OutputTrait for Custom {
         } else {
             debug!("pushing to custom: {} ", &self.command);
 
-            println!("{:?}", &serialized_message);
-
             let mut args = self.arguments.clone();
             args.push(serialized_message);
 
