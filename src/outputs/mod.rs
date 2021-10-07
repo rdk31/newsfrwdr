@@ -1,3 +1,4 @@
+pub mod custom;
 pub mod discord;
 
 use async_trait::async_trait;
@@ -6,7 +7,7 @@ use reqwest::Client;
 
 use crate::{config::OutputConfig, Result};
 
-use discord::Discord;
+use self::{custom::Custom, discord::Discord};
 
 pub struct Output {
     output: Box<dyn OutputTrait + Send + Sync>,
@@ -14,8 +15,13 @@ pub struct Output {
 
 impl Output {
     pub fn new(output_config: OutputConfig, client: Client) -> Self {
-        let output = match output_config {
+        let output: Box<dyn OutputTrait + Send + Sync> = match output_config {
             OutputConfig::Discord { url } => Box::new(Discord::new(url, client)),
+            OutputConfig::Custom {
+                command,
+                arguments,
+                use_stdin,
+            } => Box::new(Custom::new(command, arguments, use_stdin)),
         };
 
         Self { output }
