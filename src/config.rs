@@ -69,5 +69,14 @@ fn default_tags() -> Vec<String> {
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum OutputConfig {
-    Discord { url: String },
+    Discord {
+        url: String,
+    },
+    Custom {
+        command: String,
+        #[serde(default)]
+        arguments: Vec<String>,
+        #[serde(default)]
+        use_stdin: bool,
+    },
 }
