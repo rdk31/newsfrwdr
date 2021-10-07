@@ -12,6 +12,16 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 - [ ] telegram bot
 - [ ] shell command
 
+## Usage
+
+```
+Usage: newsfrwdr [OPTIONS]
+
+Optional arguments:
+  -h, --help           print help message
+  -c, --config CONFIG  alternative path to config.toml
+```
+
 ## Configuration
 
 Example configuration:

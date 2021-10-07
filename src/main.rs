@@ -3,6 +3,8 @@ mod error;
 mod input;
 mod outputs;
 
+use gumdrop::Options;
+
 use std::process;
 
 use futures::future;
@@ -19,17 +21,29 @@ use crate::{config::Config, input::Input, outputs::Output};
 
 pub type Result<T> = std::result::Result<T, crate::error::Error>;
 
+#[derive(Options)]
+struct MyOptions {
+    #[options(help = "print help message")]
+    help: bool,
+
+    #[options(help = "alternative path to config.toml")]
+    config: Option<String>,
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::init();
 
-    let config = match Config::from_file("config.toml").await {
-        Ok(c) => c,
-        Err(e) => {
-            error!("Error while reading config: {}", e);
-            process::exit(1);
-        }
-    };
+    let opts = MyOptions::parse_args_default_or_exit();
+
+    let config =
+        match Config::from_file(opts.config.unwrap_or_else(|| "config.toml".to_owned())).await {
+            Ok(c) => c,
+            Err(e) => {
+                error!("Error while reading config: {}", e);
+                process::exit(1);
+            }
+        };
 
     let client = build_client()?;
 
