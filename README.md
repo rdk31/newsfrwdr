@@ -6,11 +6,11 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 
 ## Supported outputs
 
+- [x] custom command
 - [x] discord webhook
 - [ ] discord bot
 - [ ] slack webhook
 - [ ] telegram bot
-- [ ] shell command
 
 ## Usage
 
@@ -31,7 +31,7 @@ Optional arguments:
 
 ## Configuration
 
-Example configuration:
+### Example configuration:
 
 ```toml
 [inputs.rust-blog]
@@ -57,21 +57,52 @@ type = "discord"
 url = "https://discord.com/api/webhooks/ijkl..."
 
 [[outputs.it]]        # forward the same tag to another channel
-type = "discord"
-url = "https://discord.com/api/webhooks/mnop..."
+type = "custom"
+command = "notify-send"
 ```
 
-Full configuration options:
+### Inputs
 
-```toml
-[inputs.name]
-url = "url"
-interval = "30m"   # optional
-retry_limit = 10   # optional
-tags = ["default"] # optional
+| Field         |   Type   | Required |   Default   | Description            |
+| ------------- | :------: | :------: | :---------: | ---------------------- |
+| key           |  string  |   yes    |      -      | input name             |
+| `url`         |  string  |   yes    |      -      | url to the feed        |
+| `interval`    |  string  |    no    |    "30m"    | feed refresh interval  |
+| `retry_limit` |   int    |    no    |     10      | feed fetch retry limit |
+| `tags`        | [string] |    no    | ["default"] | array of tags          |
 
-[[outputs.name/tag]]
-type = "discord"   # discord
-# type specific arguments, for discord:
-url = "url"        # webhook url
+### Outputs
+
+#### `discord` type
+
+Uses embeds to push entries. Title of the embed is in format: `<input_name> - <entry_title>`.
+
+| Field  |  Type  | Required | Default | Description                  |
+| ------ | :----: | :------: | :-----: | ---------------------------- |
+| key    | string |   yes    |    -    | input name or tag to forward |
+| `type` | string |   yes    |    -    | output type                  |
+| `url`  | string |   yes    |    -    | discord webhook url          |
+
+#### `custom` type
+
+Serializes entries to this json structure:
+
+```json
+{
+  "entries": [
+    {
+      "title": "<input_name> - <entry_title>",
+      "url": "url to the entry",
+      "timestamp": "2021-10-07T00:00:00Z"
+    }
+  ]
+}
 ```
+
+| Field       |   Type   | Required | Default | Description                                                                                |
+| ----------- | :------: | :------: | :-----: | ------------------------------------------------------------------------------------------ |
+| key         |  string  |   yes    |    -    | input name or tag to forward                                                               |
+| `type`      |  string  |   yes    |    -    | output type                                                                                |
+| `command`   |  string  |   yes    |    -    | command to run                                                                             |
+| `arguments` | [string] |    no    |   []    | command arguments                                                                          |
+| `use_stdin` |   bool   |    no    |  false  | - false - add the message to the arguments array <br /> - true - push the message to stdin |
