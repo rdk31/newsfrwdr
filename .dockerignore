@@ -1,0 +1,12 @@
+/target
+
+.github
+
+.git
+.gitignore
+
+Dockerfile
+.dockerignore
+
+LICENSE
+README.md
