@@ -9,19 +9,19 @@ use super::OutputTrait;
 use crate::Result;
 use async_trait::async_trait;
 
-pub struct Discord {
+pub struct DiscordWebhook {
     url: String,
     client: Client,
 }
 
-impl Discord {
+impl DiscordWebhook {
     pub fn new(url: String, client: Client) -> Self {
         Self { url, client }
     }
 }
 
 #[async_trait]
-impl OutputTrait for Discord {
+impl OutputTrait for DiscordWebhook {
     async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
         for chunk in entries.chunks(10) {
             let embeds: Vec<EmbedObject> = chunk

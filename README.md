@@ -45,15 +45,15 @@ tags = ["it"]
 url = "https://rdk31.com/atom.xml"
 
 [[outputs.default]]   # default output
-type = "discord"
+type = "discord_webhook"
 url = "https://discord.com/api/webhooks/abcd..."
 
 [[outputs.rust-blog]] # name output
-type = "discord"
+type = "discord_webhook"
 url = "https://discord.com/api/webhooks/efgh..."
 
 [[outputs.it]]        # tag output
-type = "discord"
+type = "discord_webhook"
 url = "https://discord.com/api/webhooks/ijkl..."
 
 [[outputs.it]]        # forward the same tag to another channel
@@ -73,7 +73,7 @@ command = "notify-send"
 
 ### Outputs
 
-#### `discord` type
+#### `discord_webhook` type
 
 Uses embeds to push entries. Title of the embed is in format: `<input_name> - <entry_title>`.
 
