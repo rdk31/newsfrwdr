@@ -21,12 +21,12 @@ impl Output {
         Self { output }
     }
 
-    pub async fn push(&self, name: &str, entries: &Vec<&Entry>) -> Result<()> {
+    pub async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
         self.output.push(name, entries).await
     }
 }
 
 #[async_trait]
 trait OutputTrait {
-    async fn push(&self, name: &str, entries: &Vec<&Entry>) -> Result<()>;
+    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()>;
 }

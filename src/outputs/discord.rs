@@ -22,7 +22,7 @@ impl Discord {
 
 #[async_trait]
 impl OutputTrait for Discord {
-    async fn push(&self, name: &str, entries: &Vec<&Entry>) -> Result<()> {
+    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
         for chunk in entries.chunks(10) {
             let embeds: Vec<EmbedObject> = chunk
                 .iter()

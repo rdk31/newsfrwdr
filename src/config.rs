@@ -21,6 +21,7 @@ impl Config {
         Ok(config)
     }
 
+    #[allow(clippy::needless_collect)] // https://github.com/rust-lang/rust-clippy/issues/6909
     fn is_valid(&self) -> Result<()> {
         let tags: Vec<&String> = self
             .inputs

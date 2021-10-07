@@ -83,7 +83,7 @@ impl Input {
             let last_entry = items.first().unwrap();
 
             if self.last_date.is_none() {
-                self.last_date = last_entry.published.clone();
+                self.last_date = last_entry.published;
                 // self.last_date = Some(Utc.ymd(2020, 8, 1).and_hms(0, 0, 0));
             }
 
