@@ -14,6 +14,13 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 
 ## Usage
 
+### Docker
+
+- `docker build -t newsfrwdr .`
+- `docker run -d -v "/path/to/config.toml:/config/config.toml" newsfrwdr`
+
+### Command line
+
 ```
 Usage: newsfrwdr [OPTIONS]
 
