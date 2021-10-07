@@ -28,6 +28,21 @@ struct MyOptions {
 
     #[options(help = "alternative path to config.toml")]
     config: Option<String>,
+
+    #[cfg(debug_assertions)]
+    #[options(help = "test mode - pushes last 3 entries on startup for every input")]
+    test_mode: bool,
+}
+
+#[cfg(debug_assertions)]
+fn handle_test_mode(test_mode: bool) {
+    use std::env;
+
+    if test_mode {
+        env::set_var("TEST_MODE", "1");
+    } else {
+        env::set_var("TEST_MODE", "0");
+    }
 }
 
 #[tokio::main]
@@ -35,6 +50,9 @@ async fn main() -> Result<()> {
     env_logger::init();
 
     let opts = MyOptions::parse_args_default_or_exit();
+
+    #[cfg(debug_assertions)]
+    handle_test_mode(opts.test_mode);
 
     let config =
         match Config::from_file(opts.config.unwrap_or_else(|| "config.toml".to_owned())).await {

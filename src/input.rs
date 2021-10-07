@@ -91,6 +91,21 @@ impl Input {
                 .take_while(|e| e.published.gt(&self.last_date))
                 .collect();
 
+            #[cfg(debug_assertions)]
+            let new_entries = {
+                use std::env;
+
+                if let Ok(mode) = env::var("TEST_MODE") {
+                    if mode == "1" {
+                        items.iter().take(3).collect()
+                    } else {
+                        new_entries
+                    }
+                } else {
+                    new_entries
+                }
+            };
+
             if new_entries.is_empty() {
                 continue;
             }
