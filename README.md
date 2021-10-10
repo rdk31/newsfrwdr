@@ -16,8 +16,7 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 
 ### Docker
 
-- `docker build -t newsfrwdr .`
-- `docker run -d -v "/path/to/config.toml:/config/config.toml" newsfrwdr`
+- `docker run -d -v "/path/to/config.toml:/config/config.toml" ghcr.io/rdk31/newsfrwdr:master`
 
 ### Command line
 
