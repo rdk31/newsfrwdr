@@ -1,11 +1,10 @@
 use chrono::{DateTime, Utc};
-use feed_rs::model::Entry;
 use log::debug;
 use reqwest::Client;
 
 use serde::Serialize;
 
-use super::OutputTrait;
+use super::{Entry, OutputTrait};
 use crate::Result;
 use async_trait::async_trait;
 
@@ -22,14 +21,23 @@ impl DiscordWebhook {
 
 #[async_trait]
 impl OutputTrait for DiscordWebhook {
-    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
+    async fn push(&self, _: &str, entries: &[Entry]) -> Result<()> {
+        debug!("pushing {} entries to discord webhook", entries.len());
+
         for chunk in entries.chunks(10) {
             let embeds: Vec<EmbedObject> = chunk
                 .iter()
-                .map(|&entry| EmbedObject::new(name, entry.clone()))
+                .map(|entry| EmbedObject {
+                    title: entry.title.clone(),
+                    description: entry.description.clone(),
+                    author: entry.author.as_ref().map(|name| EmbedAuthor {
+                        name: name.clone(),
+                        url: None,
+                    }),
+                    url: entry.url.clone(),
+                    timestamp: entry.timestamp,
+                })
                 .collect();
-
-            debug!("pushing {} embeds to discord webhook", embeds.len());
 
             let message = Message { embeds };
 
@@ -53,18 +61,14 @@ struct Message {
 #[derive(Serialize)]
 struct EmbedObject {
     title: String,
+    description: String,
+    author: Option<EmbedAuthor>,
     url: String,
     timestamp: DateTime<Utc>,
 }
 
-impl EmbedObject {
-    fn new(name: &str, entry: Entry) -> Self {
-        let link = entry.links.first().unwrap();
-
-        Self {
-            title: format!("{} - {}", name, entry.title.unwrap().content),
-            url: link.href.clone(),
-            timestamp: entry.published.unwrap(),
-        }
-    }
+#[derive(Serialize)]
+struct EmbedAuthor {
+    name: String,
+    url: Option<String>,
 }

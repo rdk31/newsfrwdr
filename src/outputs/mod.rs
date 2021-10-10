@@ -4,8 +4,9 @@ pub mod discord_webhook;
 pub mod slack;
 
 use async_trait::async_trait;
-use feed_rs::model::Entry;
+use chrono::{DateTime, Utc};
 use reqwest::Client;
+use serde::Serialize;
 
 use crate::{config::OutputConfig, Result};
 
@@ -35,12 +36,55 @@ impl Output {
         Self { output }
     }
 
-    pub async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
+    pub async fn push(&self, name: &str, entries: &[Entry]) -> Result<()> {
         self.output.push(name, entries).await
     }
 }
 
 #[async_trait]
 trait OutputTrait {
-    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()>;
+    async fn push(&self, name: &str, entries: &[Entry]) -> Result<()>;
+}
+
+#[derive(Serialize)]
+pub struct Entry {
+    title: String,
+    description: String,
+    author: Option<String>,
+    url: String,
+    timestamp: DateTime<Utc>,
+}
+
+impl From<feed_rs::model::Entry> for Entry {
+    fn from(entry: feed_rs::model::Entry) -> Self {
+        let description = if let Some(content) = entry.content {
+            match content.content_type.subtype().as_str() {
+                "html" => content.body.map_or_else(
+                    || "".to_owned(),
+                    |body| html2text::from_read(body.as_bytes(), 80),
+                ),
+                _ => content.body.unwrap_or_else(|| "".to_owned()),
+            }
+            .chars()
+            .take(256)
+            .collect()
+        } else {
+            "".to_owned()
+        };
+
+        Self {
+            title: entry
+                .title
+                .map(|t| t.content)
+                .unwrap_or_else(|| "".to_owned()),
+            description,
+            author: entry.authors.first().map(|p| p.name.clone()),
+            url: entry
+                .links
+                .first()
+                .map(|l| l.href.clone())
+                .unwrap_or_default(),
+            timestamp: entry.published.unwrap(),
+        }
+    }
 }

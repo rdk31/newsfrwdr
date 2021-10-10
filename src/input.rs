@@ -1,15 +1,17 @@
 use chrono::{DateTime, Utc};
-use feed_rs::{
-    model::{Entry, Feed},
-    parser,
-};
+use feed_rs::{model::Feed, parser};
 use reqwest::Client;
 use std::time::Duration;
 use tokio::sync::broadcast::Receiver;
 
 use log::{debug, error};
 
-use crate::{config::InputConfig, error::Error, outputs::Output, Result};
+use crate::{
+    config::InputConfig,
+    error::Error,
+    outputs::{Entry, Output},
+    Result,
+};
 
 const DEFAULT_INTERVAL: Duration = Duration::from_secs(60 * 30);
 
@@ -86,7 +88,7 @@ impl Input {
                 self.last_date = last_entry.published;
             }
 
-            let new_entries: Vec<&Entry> = items
+            let new_entries: Vec<&feed_rs::model::Entry> = items
                 .iter()
                 .take_while(|e| e.published.gt(&self.last_date))
                 .collect();
@@ -97,7 +99,7 @@ impl Input {
 
                 if let Ok(mode) = env::var("TEST_MODE") {
                     if mode == "1" {
-                        items.iter().take(3).collect()
+                        items.iter().take(2).collect()
                     } else {
                         new_entries
                     }
@@ -116,8 +118,13 @@ impl Input {
                 feed.title.unwrap().content,
             );
 
+            let entries: Vec<Entry> = new_entries
+                .iter()
+                .map(|&e| Entry::from(e.clone()))
+                .collect();
+
             for output in self.outputs.iter() {
-                output.push(&self.name, &new_entries).await?;
+                output.push(&self.name, &entries).await?;
             }
 
             self.last_date = last_entry.published;

@@ -1,9 +1,8 @@
-use feed_rs::model::Entry;
 use log::debug;
 
 use serenity::{builder::CreateEmbed, http::Http};
 
-use super::OutputTrait;
+use super::{Entry, OutputTrait};
 use crate::Result;
 use async_trait::async_trait;
 
@@ -20,7 +19,9 @@ impl DiscordBot {
 
 #[async_trait]
 impl OutputTrait for DiscordBot {
-    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
+    async fn push(&self, _: &str, entries: &[Entry]) -> Result<()> {
+        debug!("pushing {} entries to discord bot", entries.len());
+
         let http = Http::new_with_token(&self.token);
 
         let user = http.get_user(self.user_id).await?;
@@ -28,22 +29,21 @@ impl OutputTrait for DiscordBot {
         for chunk in entries.chunks(10) {
             let embeds: Vec<CreateEmbed> = chunk
                 .iter()
-                .map(|&entry| {
-                    let link = entry.links.first().unwrap();
-
+                .map(|entry| {
                     let mut e = CreateEmbed::default();
-                    e.title(format!(
-                        "{} - {}",
-                        name,
-                        entry.title.as_ref().unwrap().content
-                    ));
-                    e.url(link.href.clone());
-                    e.timestamp(entry.published.unwrap().to_rfc3339());
+                    e.title(entry.title.clone());
+                    e.description(entry.description.clone());
+                    if let Some(author) = entry.author.as_ref() {
+                        e.author(|a| {
+                            a.name(author.clone());
+                            a
+                        });
+                    }
+                    e.url(entry.url.clone());
+                    e.timestamp(entry.timestamp.to_rfc3339());
                     e
                 })
                 .collect();
-
-            debug!("pushing {} embeds to discord bot", embeds.len());
 
             user.dm(&http, |m| {
                 m.set_embeds(embeds);
