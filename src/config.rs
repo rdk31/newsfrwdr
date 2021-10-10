@@ -83,4 +83,7 @@ pub enum OutputConfig {
     DiscordWebhook {
         url: String,
     },
+    Slack {
+        url: String,
+    },
 }

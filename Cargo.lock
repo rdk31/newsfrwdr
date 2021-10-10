@@ -741,6 +741,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serenity",
+ "slack-bk",
  "thiserror",
  "tokio",
  "toml",
@@ -1286,6 +1287,15 @@ name = "slab"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c307a32c1c5c437f38c7fd45d753050587732ba8628319fbdf12a7e289ccc590"
+
+[[package]]
+name = "slack-bk"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "329bae08b1667e9ef43ea901f0bb5064bdb4b5ee7ab607cb857ac79887f62943"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "smallvec"

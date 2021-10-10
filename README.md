@@ -9,7 +9,7 @@ Inspired by: [rss-forwarder](https://github.com/morphy2k/rss-forwarder)
 - [x] custom command
 - [x] discord webhook
 - [x] discord bot
-- [ ] slack webhook
+- [x] slack webhook
 - [ ] telegram bot
 
 ## Usage
@@ -93,6 +93,14 @@ Uses embeds to push entries. Title of the embed is in format: `<input_name> - <e
 | key       | string |   yes    |    -    | input name or tag to forward |
 | `token`   | string |   yes    |    -    | discord bot token            |
 | `user_id` |  u64   |   yes    |    -    | user id to push entries to   |
+
+#### `slack` type
+
+| Field  |  Type  | Required | Default | Description                  |
+| ------ | :----: | :------: | :-----: | ---------------------------- |
+| key    | string |   yes    |    -    | input name or tag to forward |
+| `type` | string |   yes    |    -    | output type                  |
+| `url`  | string |   yes    |    -    | slack webhook url            |
 
 #### `custom` type
 

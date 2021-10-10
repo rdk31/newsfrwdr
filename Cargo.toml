@@ -30,3 +30,5 @@ env_logger = "0.9"
 gumdrop = "0.8"
 
 serenity = "0.10"
+
+slack-bk = "0.1"
