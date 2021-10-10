@@ -60,6 +60,10 @@ url = "https://discord.com/api/webhooks/ijkl..."
 [[outputs.it]]        # forward the same tag to another channel
 type = "custom"
 command = "notify-send"
+
+[[outputs.github-blog]]
+type = "slack"
+url = "https://hooks.slack.com/services/..."
 ```
 
 ### Inputs
