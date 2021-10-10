@@ -85,16 +85,14 @@ fn block_from_entry(name: &str, entry: &Entry) -> [Block; 4] {
         ..Default::default()
     };
 
-    let mut ctx_elements = Vec::with_capacity(1);
-
-    ctx_elements.push(ContextElement::Text(Text::PlainText(PlainText {
+    let ctx_elements = vec![ContextElement::Text(Text::PlainText(PlainText {
         text: entry
             .published
             .unwrap()
             .format("%d %b %Y %I:%M %p %Z")
             .to_string(),
         emoji: false,
-    })));
+    }))];
 
     let context = Context {
         elements: ctx_elements,
