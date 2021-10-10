@@ -811,7 +811,6 @@ dependencies = [
  "html2text",
  "humantime-serde",
  "log",
- "mime",
  "reqwest",
  "serde",
  "serde_json",
