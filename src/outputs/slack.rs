@@ -1,15 +1,14 @@
-use feed_rs::model::Entry;
 use log::debug;
 use reqwest::Client;
 
 use serde::Serialize;
 use slack_bk::{
     blocks::{Block, Context, ContextElement, Divider, Header, Section},
-    composition::{PlainText, Text},
+    composition::{MarkdownText, PlainText, Text},
     elements::{Button, Element},
 };
 
-use super::OutputTrait;
+use super::{Entry, OutputTrait};
 use crate::Result;
 use async_trait::async_trait;
 
@@ -26,13 +25,13 @@ impl Slack {
 
 #[async_trait]
 impl OutputTrait for Slack {
-    async fn push(&self, name: &str, entries: &[&Entry]) -> Result<()> {
+    async fn push(&self, _: &str, entries: &[Entry]) -> Result<()> {
         debug!("pushing {} entries to slack", entries.len());
 
         for chunk in entries.chunks(10) {
             let blocks: Vec<Block> = chunk
                 .iter()
-                .map(|&entry| block_from_entry(name, entry))
+                .map(|entry| block_from_entry(entry))
                 .flatten()
                 .collect();
 
@@ -55,21 +54,25 @@ struct Message {
     blocks: Vec<Block>,
 }
 
-fn block_from_entry(name: &str, entry: &Entry) -> [Block; 4] {
-    let link = entry.links.first().unwrap();
-
+fn block_from_entry(entry: &Entry) -> [Block; 4] {
     let header = Header {
         text: Text::PlainText(PlainText {
-            text: format!("{} - {}", name, entry.title.as_ref().unwrap().content),
+            text: entry.title.clone(),
             emoji: false,
         }),
         block_id: None,
     };
 
+    let description = if entry.description.is_empty() {
+        "no description".to_owned()
+    } else {
+        entry.description.clone()
+    };
+
     let section = Section {
-        text: Text::PlainText(PlainText {
-            text: entry.title.as_ref().unwrap().content.clone(),
-            emoji: false,
+        text: Text::Markdown(MarkdownText {
+            text: description,
+            verbatim: false,
         })
         .into(),
         accessory: Element::Button(Button {
@@ -78,21 +81,31 @@ fn block_from_entry(name: &str, entry: &Entry) -> [Block; 4] {
                 emoji: true,
             }),
             action_id: "button-action".to_owned(),
-            url: Some(link.href.clone()),
+            url: Some(entry.url.clone()),
             ..Default::default()
         })
         .into(),
         ..Default::default()
     };
 
-    let ctx_elements = vec![ContextElement::Text(Text::PlainText(PlainText {
-        text: entry
-            .published
-            .unwrap()
-            .format("%d %b %Y %I:%M %p %Z")
-            .to_string(),
+    let mut ctx_elements = Vec::with_capacity(3);
+
+    if let Some(author) = entry.author.as_ref() {
+        ctx_elements.push(ContextElement::Text(Text::Markdown(MarkdownText {
+            text: author.clone(),
+            verbatim: false,
+        })));
+    }
+
+    ctx_elements.push(ContextElement::Text(Text::Markdown(MarkdownText {
+        text: entry.url.clone(),
+        verbatim: false,
+    })));
+
+    ctx_elements.push(ContextElement::Text(Text::PlainText(PlainText {
+        text: entry.timestamp.format("%d %b %Y %I:%M %p %Z").to_string(),
         emoji: false,
-    }))];
+    })));
 
     let context = Context {
         elements: ctx_elements,

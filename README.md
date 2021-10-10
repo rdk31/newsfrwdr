@@ -80,8 +80,6 @@ url = "https://hooks.slack.com/services/..."
 
 #### `discord_webhook` type
 
-Uses embeds to push entries. Title of the embed is in format: `<input_name> - <entry_title>`.
-
 | Field  |  Type  | Required | Default | Description                  |
 | ------ | :----: | :------: | :-----: | ---------------------------- |
 | key    | string |   yes    |    -    | input name or tag to forward |
@@ -89,8 +87,6 @@ Uses embeds to push entries. Title of the embed is in format: `<input_name> - <e
 | `url`  | string |   yes    |    -    | discord webhook url          |
 
 #### `discord_bot` type
-
-Uses embeds to push entries. Title of the embed is in format: `<input_name> - <entry_title>`.
 
 | Field     |  Type  | Required | Default | Description                  |
 | --------- | :----: | :------: | :-----: | ---------------------------- |
@@ -112,13 +108,11 @@ Serializes entries to this json structure:
 
 ```json
 {
-  "entries": [
-    {
-      "title": "<input_name> - <entry_title>",
-      "url": "url to the entry",
-      "timestamp": "2021-10-07T00:00:00Z"
-    }
-  ]
+  "title": "title",
+  "description": "description",
+  "author": "null or string",
+  "url": "url",
+  "timestamp": "ISO 8601 string"
 }
 ```
 
