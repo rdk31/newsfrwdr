@@ -10,3 +10,14 @@ Dockerfile
 
 LICENSE
 README.md
+
+flake.nix
+flake.lock
+/result
+/result-lib
+
+.envrc
+/.direnv
+
+default.nix
+shell.nix
