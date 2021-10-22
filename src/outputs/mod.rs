@@ -46,6 +46,9 @@ trait OutputTrait {
     async fn push(&self, name: &str, entries: &[Entry]) -> Result<()>;
 }
 
+const TEXT_WIDTH: usize = 80;
+const DESCRIPTION_MAX_LENGTH: usize = 256;
+
 #[derive(Serialize)]
 pub struct Entry {
     title: String,
@@ -57,19 +60,33 @@ pub struct Entry {
 
 impl From<feed_rs::model::Entry> for Entry {
     fn from(entry: feed_rs::model::Entry) -> Self {
-        let description = if let Some(content) = entry.content {
+        let description = if let Some(summary) = entry.summary {
+            match summary.content_type.subtype().as_str() {
+                "html" => html2text::from_read(summary.content.as_bytes(), TEXT_WIDTH),
+                _ => summary.content,
+            }
+        } else if let Some(content) = entry.content {
             match content.content_type.subtype().as_str() {
                 "html" => content.body.map_or_else(
                     || "".to_owned(),
-                    |body| html2text::from_read(body.as_bytes(), 80),
+                    |body| html2text::from_read(body.as_bytes(), TEXT_WIDTH),
                 ),
                 _ => content.body.unwrap_or_else(|| "".to_owned()),
             }
-            .chars()
-            .take(256)
-            .collect()
         } else {
             "".to_owned()
+        };
+
+        let description = if description.len() > DESCRIPTION_MAX_LENGTH {
+            format!(
+                "{}...",
+                description
+                    .chars()
+                    .take(DESCRIPTION_MAX_LENGTH)
+                    .collect::<String>()
+            )
+        } else {
+            description
         };
 
         Self {
