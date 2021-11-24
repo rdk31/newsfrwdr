@@ -40,9 +40,6 @@ url = "https://blog.rust-lang.org/feed.xml"
 url = "https://github.blog/all.atom"
 tags = ["it"]
 
-[inputs.rdk31]
-url = "https://rdk31.com/atom.xml"
-
 [[outputs.default]]   # default output
 type = "discord_webhook"
 url = "https://discord.com/api/webhooks/abcd..."
