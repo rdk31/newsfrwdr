@@ -6,10 +6,11 @@
     utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crate2nix = {
-      url = "github:kolloch/crate2nix";
+      #url = "github:kolloch/crate2nix";
       # if you use git dependencies with branches in Cargo.toml, use this fork
       # https://github.com/kolloch/crate2nix/issues/205
       #url = "github:yusdacra/crate2nix/feat/builtinfetchgit";
+      url = "github:balsoft/crate2nix/balsoft/fix-broken-ifd";
       flake = false;
     };
     flake-compat = {
@@ -94,60 +95,62 @@
             };
         }
       ) // {
-        nixosModule = { pkgs, config, ... }:
-          let
-            inherit (nixpkgs) lib;
-            cfg = config.services.newsfrwdr;
-          in {
-            options.services.newsfrwdr = {
-              enable = lib.mkEnableOption "newsfrwdr service";
+      nixosModule = { pkgs, config, ... }:
+        let
+          inherit (nixpkgs) lib;
+          cfg = config.services.newsfrwdr;
+        in
+        {
+          options.services.newsfrwdr = {
+            enable = lib.mkEnableOption "newsfrwdr service";
 
-              config = lib.mkOption {
-                type = with lib.types; str;
-                default = "";
-                example = ''
-                  [inputs.rdk31]
-                  url = "https://rdk31.com/atom.xml"
+            config = lib.mkOption {
+              type = with lib.types; str;
+              default = "";
+              example = ''
+                [inputs.rdk31]
+                url = "https://rdk31.com/atom.xml"
 
-                  [[outputs.default]]
-                  type = "discord_webhook"
-                  url = "https://discord.com/api/webhooks/abcd..."
-                '';
-                description = ''
-                  Config.
-                  Warning: this is stored in cleartext in the Nix store!
-                  Use <option>configFile</option> instead.
-                '';
-              };
-
-              configFile = lib.mkOption {
-                type = with lib.types; nullOr path;
-                default = null;
-                example = "/run/keys/newsfrwdr-config";
-                description = ''
-                  Config file.
-                '';
-              };
+                [[outputs.default]]
+                type = "discord_webhook"
+                url = "https://discord.com/api/webhooks/abcd..."
+              '';
+              description = ''
+                Config.
+                Warning: this is stored in cleartext in the Nix store!
+                Use <option>configFile</option> instead.
+              '';
             };
 
-            config = 
-              let
-                configFile = if (cfg.configFile != null) then cfg.configFile else
-                  pkgs.writeText "newsfrwdr-config.toml" cfg.config;
-              in lib.mkIf cfg.enable {
-                nixpkgs.overlays = [ self.overlay ];
-
-                systemd.services.newsfrwdr = {
-                  description = "newsfrwdr";
-                  after = [ "network.target" ];
-                  wantedBy = [ "multi-user.target" ];
-                  serviceConfig.ExecStart = "${pkgs.newsfrwdr}/bin/newsfrwdr -c ${configFile}";
-                };
-              };
+            configFile = lib.mkOption {
+              type = with lib.types; nullOr path;
+              default = null;
+              example = "/run/keys/newsfrwdr-config";
+              description = ''
+                Config file.
+              '';
+            };
           };
 
-        overlay = final: prev: {
-          ${name} = self.defaultPackage.${prev.system};
+          config =
+            let
+              configFile = if (cfg.configFile != null) then cfg.configFile else
+              pkgs.writeText "newsfrwdr-config.toml" cfg.config;
+            in
+            lib.mkIf cfg.enable {
+              nixpkgs.overlays = [ self.overlay ];
+
+              systemd.services.newsfrwdr = {
+                description = "newsfrwdr";
+                after = [ "network.target" ];
+                wantedBy = [ "multi-user.target" ];
+                serviceConfig.ExecStart = "${pkgs.newsfrwdr}/bin/newsfrwdr -c ${configFile}";
+              };
+            };
         };
+
+      overlay = final: prev: {
+        ${name} = self.defaultPackage.${prev.system};
       };
+    };
 }

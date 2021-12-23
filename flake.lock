@@ -3,15 +3,16 @@
     "crate2nix": {
       "flake": false,
       "locked": {
-        "lastModified": 1634057890,
-        "narHash": "sha256-vQKatQ/e2Tx9b6ykSrnU+5jVcH8VYtHe1s8NWrvZux8=",
-        "owner": "kolloch",
+        "lastModified": 1636361151,
+        "narHash": "sha256-PCyoPHYRG4gtgfBuk+N6qcPbc8EvooLBQ4tfeQjrjx0=",
+        "owner": "balsoft",
         "repo": "crate2nix",
-        "rev": "4ea73d6a96f9dcf5cab70e454e39b33ca0bbaccb",
+        "rev": "08c87b1883cfc554a506cdfcbaa487b189cbbd22",
         "type": "github"
       },
       "original": {
-        "owner": "kolloch",
+        "owner": "balsoft",
+        "ref": "balsoft/fix-broken-ifd",
         "repo": "crate2nix",
         "type": "github"
       }
