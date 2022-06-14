@@ -29,11 +29,7 @@ impl OutputTrait for Slack {
         debug!("pushing {} entries to slack", entries.len());
 
         for chunk in entries.chunks(10) {
-            let blocks: Vec<Block> = chunk
-                .iter()
-                .map(|entry| block_from_entry(entry))
-                .flatten()
-                .collect();
+            let blocks: Vec<Block> = chunk.iter().flat_map(block_from_entry).collect();
 
             let message = Message { blocks };
 
