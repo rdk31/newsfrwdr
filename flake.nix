@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    utils.url = "github:numtide/flake-utils";
+    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crate2nix = {
       url = "github:kolloch/crate2nix";
@@ -18,13 +18,13 @@
     };
   };
 
-  outputs = { self, nixpkgs, utils, rust-overlay, crate2nix, ... }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, crate2nix, ... }:
     let
       # If you change the name here, you must also do it in Cargo.toml
       name = "newsfrwdr";
       rustChannel = "stable";
     in
-    utils.lib.eachDefaultSystem
+    flake-utils.lib.eachDefaultSystem
       (system:
         let
           # Imports
@@ -73,7 +73,7 @@
           defaultPackage = packages.${name};
 
           # `nix run`
-          apps.${name} = utils.lib.mkApp {
+          apps.${name} = flake-utils.lib.mkApp {
             inherit name;
             drv = packages.${name};
           };
@@ -94,60 +94,62 @@
             };
         }
       ) // {
-        nixosModule = { pkgs, config, ... }:
-          let
-            inherit (nixpkgs) lib;
-            cfg = config.services.newsfrwdr;
-          in {
-            options.services.newsfrwdr = {
-              enable = lib.mkEnableOption "newsfrwdr service";
+      nixosModule = { pkgs, config, ... }:
+        let
+          inherit (nixpkgs) lib;
+          cfg = config.services.newsfrwdr;
+        in
+        {
+          options.services.newsfrwdr = {
+            enable = lib.mkEnableOption "newsfrwdr service";
 
-              config = lib.mkOption {
-                type = with lib.types; str;
-                default = "";
-                example = ''
-                  [inputs.rdk31]
-                  url = "https://rdk31.com/atom.xml"
+            config = lib.mkOption {
+              type = with lib.types; str;
+              default = "";
+              example = ''
+                [inputs.rust-blog]
+                url = "https://blog.rust-lang.org/feed.xml"
 
-                  [[outputs.default]]
-                  type = "discord_webhook"
-                  url = "https://discord.com/api/webhooks/abcd..."
-                '';
-                description = ''
-                  Config.
-                  Warning: this is stored in cleartext in the Nix store!
-                  Use <option>configFile</option> instead.
-                '';
-              };
-
-              configFile = lib.mkOption {
-                type = with lib.types; nullOr path;
-                default = null;
-                example = "/run/keys/newsfrwdr-config";
-                description = ''
-                  Config file.
-                '';
-              };
+                [[outputs.default]]
+                type = "discord_webhook"
+                url = "https://discord.com/api/webhooks/abcd..."
+              '';
+              description = ''
+                Config.
+                Warning: this is stored in cleartext in the Nix store!
+                Use <option>configFile</option> instead.
+              '';
             };
 
-            config = 
-              let
-                configFile = if (cfg.configFile != null) then cfg.configFile else
-                  pkgs.writeText "newsfrwdr-config.toml" cfg.config;
-              in lib.mkIf cfg.enable {
-                nixpkgs.overlays = [ self.overlay ];
-
-                systemd.services.newsfrwdr = {
-                  description = "newsfrwdr";
-                  after = [ "network.target" ];
-                  wantedBy = [ "multi-user.target" ];
-                  serviceConfig.ExecStart = "${pkgs.newsfrwdr}/bin/newsfrwdr -c ${configFile}";
-                };
-              };
+            configFile = lib.mkOption {
+              type = with lib.types; nullOr path;
+              default = null;
+              example = "/run/keys/newsfrwdr-config";
+              description = ''
+                Config file.
+              '';
+            };
           };
 
-        overlay = final: prev: {
-          ${name} = self.defaultPackage.${prev.system};
+          config =
+            let
+              configFile = if (cfg.configFile != null) then cfg.configFile else
+              pkgs.writeText "newsfrwdr-config.toml" cfg.config;
+            in
+            lib.mkIf cfg.enable {
+              nixpkgs.overlays = [ self.overlay ];
+
+              systemd.services.newsfrwdr = {
+                description = "newsfrwdr";
+                after = [ "network.target" ];
+                wantedBy = [ "multi-user.target" ];
+                serviceConfig.ExecStart = "${pkgs.newsfrwdr}/bin/newsfrwdr -c ${configFile}";
+              };
+            };
         };
+
+      overlay = final: prev: {
+        ${name} = self.defaultPackage.${prev.system};
       };
+    };
 }

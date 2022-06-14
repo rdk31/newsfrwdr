@@ -1,4 +1,4 @@
-FROM rust:1.55.0 as builder
+FROM rust:1.61.0-buster as builder
 
 WORKDIR /usr/src/newsfrwdr
 COPY . .
