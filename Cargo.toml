@@ -2,7 +2,7 @@
 name = "newsfrwdr"
 version = "0.1.0-alpha.1"
 authors = ["rdk31 <rdk31@protonmail.com>"]
-edition = "2018"
+edition = "2021"
 license = "MIT"
 repository = "https://github.com/rdk31/newsfrwdr"
 
