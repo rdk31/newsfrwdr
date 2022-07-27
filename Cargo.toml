@@ -33,4 +33,4 @@ serenity = "0.10"
 
 slack-bk = "0.1"
 
-html2text = "0.2"
+html2text = "0.4"
