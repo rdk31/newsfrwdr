@@ -87,6 +87,7 @@ url = "https://hooks.slack.com/services/..."
 | Field     |  Type  | Required | Default | Description                  |
 | --------- | :----: | :------: | :-----: | ---------------------------- |
 | key       | string |   yes    |    -    | input name or tag to forward |
+| `type`    | string |   yes    |    -    | output type                  |
 | `token`   | string |   yes    |    -    | discord bot token            |
 | `user_id` |  u64   |   yes    |    -    | user id to push entries to   |
 
